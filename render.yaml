@@ -43,7 +43,7 @@ services:
       - key: TESSERACT_LANG
         value: tur
       - key: TESSERACT_DPI
-        value: "300"
+        value: "200"
       - key: TESSERACT_PSM
         value: "6"
       - key: TESSERACT_OEM
