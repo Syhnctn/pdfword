@@ -8,6 +8,7 @@ import base64
 import io
 import pathlib
 import sys
+import tempfile
 import zipfile
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
@@ -16,6 +17,24 @@ import pymupdf
 from docx import Document as DocxDocument
 
 import main as worker
+
+
+def build_two_page_sample() -> str:
+    """A two-page text PDF written to a temp file; returns its path."""
+    document = pymupdf.open()
+    for index in range(2):
+        page = document.new_page(width=595, height=842)
+        page.insert_text((72, 100), f"Sayfa {index + 1} icerik metni", fontsize=20)
+    pdf_bytes = document.tobytes()
+    document.close()
+
+    handle = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+    try:
+        handle.write(pdf_bytes)
+        handle.flush()
+        return handle.name
+    finally:
+        handle.close()
 
 
 def check(condition: bool, message: str) -> None:
@@ -211,6 +230,51 @@ def main() -> int:
         )
     finally:
         worker.fitz = original_fitz
+
+    # --- chunked OCR (page-group subprocesses) -------------------------
+    check(worker.ocr_chunk_pages() == 2, "default chunk size is 2 pages")
+
+    multi_page = pymupdf.open()
+    for index in range(5):
+        page = multi_page.new_page(width=595, height=842)
+        page.insert_text((72, 100), f"Sayfa {index + 1} icerik metni", fontsize=20)
+    multi_pdf = multi_page.tobytes()
+    multi_page.close()
+
+    with tempfile.TemporaryDirectory() as work_dir:
+        source = pathlib.Path(work_dir) / "source.pdf"
+        source.write_bytes(multi_pdf)
+        sizes: list[int] = []
+        for group_index in range(3):
+            chunk = pathlib.Path(work_dir) / f"group-{group_index}.pdf"
+            written = worker._write_pdf_slice(
+                str(source), str(chunk), group_index * 2, 2
+            )
+            sizes.append(pymupdf.open(chunk).page_count if written else -1)
+        check(sizes == [2, 2, 1], "5 pages split into page groups of 2, 2, 1")
+
+    chunk_result = worker._run_ocr_subprocess(build_two_page_sample(), 120.0)
+    check(bool(chunk_result.get("ok")), "isolated OCR subprocess returns a result")
+    check(
+        len(chunk_result.get("sections") or []) == 2,
+        "isolated subprocess reports both pages",
+    )
+    check(
+        [int(item[0]) for item in (chunk_result.get("sections") or [])] == [1, 2],
+        "isolated subprocess keeps 1-based page numbers",
+    )
+
+    merged_sections, merged_note = worker.extract_sections_via_chunked_subprocess(
+        multi_pdf
+    )
+    check(
+        [int(index) for index, _ in merged_sections] == [1, 2, 3, 4, 5],
+        "chunked path reassembles every page in order",
+    )
+    check(
+        all("Sayfa" in text for _, text in merged_sections),
+        "chunked path keeps the text of each page",
+    )
 
     print("ALL CONVERSION CHECKS PASSED")
     return 0
