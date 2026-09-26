@@ -1,0 +1,246 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta id="metaDescription" name="description" content="Only PDF to WORD - Convert scanned PDFs into editable Word documents with AI.">
+  <meta name="theme-color" content="#081833">
+  <link rel="icon" type="image/svg+xml" href="icons/brand-mark.svg">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Sora:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <title>Only PDF to WORD</title>
+  <meta name="pdfword-use-real-backend" content="true">
+  <meta name="pdfword-supabase-url" content="https://ujzovtnlqoxtutbaglas.supabase.co">
+  <meta name="pdfword-supabase-anon-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqem92dG5scW94dHV0YmFnbGFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNTM1ODYsImV4cCI6MjA4NjgyOTU4Nn0.rKCtQgNvl1VttIPRBKGEahvg9EvDfkA7dqcS0hiOsYI">
+  
+  
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  
+  
+  <style id="splash-screen-style">
+    html {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      background-color: #123ED6;
+          background-size: 100% 100%;
+    }
+
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .contain {
+      display:block;
+      width:100%; height:100%;
+      object-fit: contain;
+    }
+
+    .stretch {
+      display:block;
+      width:100%; height:100%;
+    }
+
+    .cover {
+      display:block;
+      width:100%; height:100%;
+      object-fit: cover;
+    }
+
+    .bottom {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      -ms-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
+    }
+
+    .bottomLeft {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .bottomRight {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  </style>
+  <script id="splash-screen-script">
+    function removeSplashFromWeb() {
+      document.getElementById("splash")?.remove();
+      document.getElementById("splash-branding")?.remove();
+      document.body.style.background = "transparent";
+    }
+  </script>
+</head>
+<body>
+  <picture id="splash">
+      <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
+      <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
+      <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
+  </picture>
+  
+  
+  <div class="bg-shape shape-a" aria-hidden="true"></div>
+  <div class="bg-shape shape-b" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#home">
+      <span class="brand-logo">
+        <img src="icons/brand-mark.svg" alt="Only PDF to WORD icon">
+      </span>
+      <span class="brand-text">
+        <strong data-i18n="brand_title">Only PDF to WORD</strong>
+        <small data-i18n="brand_subtitle">AI OCR Platform</small>
+      </span>
+    </a>
+
+    <div class="top-actions">
+      <nav class="tabs" data-i18n-aria-label="tabs_aria" aria-label="Ana Sekmeler">
+        <button class="tab is-active" data-tab-target="home" data-i18n="tab_home">Ana Sayfa</button>
+        <button class="tab" data-tab-target="features" data-i18n="tab_features">Ozellikler</button>
+        <button class="tab" data-tab-target="privacy" data-i18n="tab_privacy">Privacy</button>
+        <button class="tab" data-tab-target="contact" data-i18n="tab_contact">Iletisim</button>
+      </nav>
+
+      <div class="lang-switch" data-i18n-aria-label="lang_aria" aria-label="Language selection">
+        <button class="lang-btn" type="button" data-lang="tr">TR</button>
+        <button class="lang-btn is-active" type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel is-active" id="home" data-panel="">
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="badge" data-i18n="badge_text">Mobil uygulama ile birebir deneyim</p>
+          <h1 data-i18n="hero_title">Taradigin PDF'leri saniyeler icinde Word'e cevir.</h1>
+          <p class="lead" data-i18n="hero_lead">
+            Only PDF to WORD; belge yukleme, job takip, indirme ve gecmis akislarini tek ekranda yonetir.
+            Bu site canli mock metriklerle urunun durumunu gosterir.
+          </p>
+          <div class="hero-actions">
+            <a href="#features" class="btn btn-primary" data-i18n="btn_demo">Canli Demo Akisi</a>
+            <a href="#privacy" class="btn btn-ghost" data-i18n="btn_privacy">Privacy Politikasi</a>
+          </div>
+        </div>
+
+        <div class="status-card">
+          <h2 data-i18n="status_title">Sistem Durumu</h2>
+          <div class="metric-grid">
+            <article class="metric">
+              <span data-i18n="metric_docs">Bugun donusen belge</span>
+              <strong id="metricDocs">0</strong>
+            </article>
+            <article class="metric">
+              <span data-i18n="metric_rate">Basari orani</span>
+              <strong id="metricRate">%0</strong>
+            </article>
+            <article class="metric">
+              <span data-i18n="metric_time">Ortalama sure</span>
+              <strong id="metricTime">0 sn</strong>
+            </article>
+            <article class="metric">
+              <span data-i18n="metric_queue">Aktif kuyruk</span>
+              <strong id="metricQueue">0</strong>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <section class="queue-card">
+        <div class="queue-head">
+          <h3 data-i18n="queue_title">Canli Donusum Kuyrugu</h3>
+          <span class="live-dot" data-i18n="queue_live">Canli</span>
+        </div>
+
+        <ul id="queueList" class="queue-list" aria-live="polite"></ul>
+      </section>
+    </section>
+
+    <section class="panel" id="features" data-panel="">
+      <h2 class="section-title" data-i18n="features_title">Uygulama Ozellikleri</h2>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <h3 data-i18n="feature1_title">Akilli Yukleme</h3>
+          <p data-i18n="feature1_desc">Coklu PDF sec, upload progress'i satir bazinda izle, istedigin dosyayi aninda kaldir.</p>
+        </article>
+        <article class="feature-card">
+          <h3 data-i18n="feature2_title">Job Polling</h3>
+          <p data-i18n="feature2_desc">Gercek zamanli durum: queued, processing, succeeded, failed. UI otomatik yenilenir.</p>
+        </article>
+        <article class="feature-card">
+          <h3 data-i18n="feature3_title">History + Download</h3>
+          <p data-i18n="feature3_desc">Gecmis donusumleri bolumlu listele, signed URL ile guvenli indir, durum badge'lerini gor.</p>
+        </article>
+        <article class="feature-card">
+          <h3 data-i18n="feature4_title">Supabase Hazir</h3>
+          <p data-i18n="feature4_desc">Edge Functions, Storage, signed upload/download ve worker webhook yapisi ile hazir.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="privacy" data-panel="">
+      <h2 class="section-title" data-i18n="privacy_title">Privacy</h2>
+      <div class="privacy-card">
+        <p data-i18n="privacy_intro">Bu uygulama gizlilik odakli tasarlanmistir. Asagidaki maddeler urunun temel veri ilkelerini aciklar:</p>
+        <ul>
+          <li data-i18n="privacy_li1">Yuklenen dosyalar sadece donusum amaci ile islenir.</li>
+          <li data-i18n="privacy_li2">Dosya erisimleri signed URL ile sureli ve yetkili sekilde verilir.</li>
+          <li data-i18n="privacy_li3">Kullanici hesap verileri yetkisiz erisime karsi korunur.</li>
+          <li data-i18n="privacy_li4">Kullanici talebine gore dosyalar ve gecmis kayitlari silinebilir.</li>
+        </ul>
+        <p class="privacy-note" data-i18n="privacy_note">
+          Not: Gercek production politikasinda saklama suresi, yasal dayanak ve KVKK/GDPR detaylari
+          ayrica yayinlanir.
+        </p>
+        <p class="privacy-mail">
+          <span data-i18n="privacy_contact_label">Privacy sorulari:</span>
+          <a class="mail-link-inline" href="mailto:seyhanceti@gmail.com">seyhanceti@gmail.com</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="panel" id="contact" data-panel="">
+      <h2 class="section-title" data-i18n="contact_title">Iletisim</h2>
+      <div class="contact-card">
+        <p data-i18n="contact_intro">Urun, destek veya is birligi icin dogrudan ulasabilirsin:</p>
+        <a class="mail-link" href="mailto:seyhanceti@gmail.com">seyhanceti@gmail.com</a>
+
+        <form class="contact-form" id="contactForm">
+          <label data-i18n="form_name_label">
+            Ad Soyad
+            <input type="text" name="name" data-i18n-placeholder="form_name_placeholder" placeholder="Adinizi yazin" required="">
+          </label>
+          <label data-i18n="form_message_label">
+            Mesaj
+            <textarea name="message" rows="4" data-i18n-placeholder="form_message_placeholder" placeholder="Kisa mesajinizi yazin..." required=""></textarea>
+          </label>
+          <button class="btn btn-primary" type="submit" data-i18n="form_submit">Mesaji Hazirla</button>
+        </form>
+        <p id="formFeedback" class="form-feedback" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span data-i18n="footer_brand">Only PDF to WORD</span>
+    <span id="lastUpdated">Guncelleniyor...</span>
+  </footer>
+
+  <script src="app.js"></script>
+
+
+</body></html>

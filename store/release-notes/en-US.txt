@@ -1,0 +1,10 @@
+Convert your PDF files into editable Word documents (DOCX) in seconds!
+
+In this release:
+• High-quality PDF to Word conversion
+• OCR (text recognition) support for scanned documents
+• Document preview before conversion
+• Easy access to your files with conversion history
+• Performance improvements and bug fixes
+
+Your feedback is valuable to us!

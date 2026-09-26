@@ -1,0 +1,41 @@
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+tools/flutter/
+android/key.properties
+android/upload-keystore.jks
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local env / temp
+.env
+.env.*
+tmp/
+*.log
+
+# Agent scratchpads: local-only, contain live URLs, anon keys, worker
+# secrets and captured responses from this machine. Never publish these.
+.claude/
+.playwright-cli/
+
+# Build/scratch artifacts that can still hold credentials
+*.apk
+*.aab
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+
+# Generated conversion samples produced while testing
+tmp_*.docx
+11.pdf

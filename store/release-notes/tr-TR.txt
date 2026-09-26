@@ -1,0 +1,10 @@
+PDF dosyalarınızı saniyeler içinde düzenlenebilir Word belgelerine (DOCX) dönüştürün!
+
+Bu sürümde:
+• Yüksek kaliteli PDF'den Word'e dönüştürme
+• Taranmış belgeler için OCR (metin tanıma) desteği
+• Dönüştürme öncesi belge önizleme
+• Dönüştürme geçmişi ile dosyalarınıza kolay erişim
+• Performans iyileştirmeleri ve hata düzeltmeleri
+
+Geri bildirimleriniz bizim için değerli!
