@@ -8,6 +8,7 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
@@ -15,6 +16,7 @@ if (keystorePropertiesFile.exists()) {
         keystoreProperties.load(stream)
     }
 }
+
 
 android {
     namespace = "com.pdfword.pro.pdfword_pro"
@@ -41,6 +43,18 @@ android {
         versionName = flutter.versionName
     }
 
+    // 16 KB page size support.
+    //
+    // Play requires every native library to be 16 KB aligned so the app can run on
+    // 16 KB devices (Android 15+/16). Two things are needed:
+    //   1. ndkVersion = flutter.ndkVersion -> NDK r28+, which emits 16 KB aligned ELFs.
+    //      Already set above (Flutter 3.41.1 pins 28.2.13676358).
+    //   2. AGP 8.5.1+ (we use 8.11.1) automatically zip-aligns uncompressed .so entries
+    //      inside the APK when extractNativeLibs is false, which is the default for
+    //      minSdk >= 23. We keep that default (do not set extractNativeLibs).
+    // The verifyPageSize16Kb task below fails the build if a shipped .so is only 4 KB
+    // aligned, so a future dependency downgrade cannot silently reintroduce this.
+
     signingConfigs {
         create("release") {
             val storeFilePath = keystoreProperties.getProperty("storeFile")
@@ -64,10 +78,34 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+
+            // R8 / resource shrinking. AGP 8.x enables R8 "full mode" by default,
+            // which is what the Play Console "R8 optimizasyonu" recommendation asks for.
+            // Keep rules live in proguard-rules.pro; they are required by the
+            // reflection-based plugin code (google_mobile_ads, supabase, open_filex...).
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+
         }
+    }
+
+    // Pin androidx.datastore, which arrives transitively via shared_preferences_android.
+    // It ships libdatastore_shared_counter.so, the exact library Play flagged in the
+    // 16 KB page size report. 1.2.0 is the 16 KB aligned build; pinning it guards
+    // against a transitive downgrade reintroducing the 4 KB only variant.
+    dependencies {
+        implementation("androidx.datastore:datastore:1.2.0")
     }
 }
 
 flutter {
     source = "../.."
 }
+
+// 16 KB page size verification (kept in a separate plain Groovy script for clarity).
+apply(from = "page-size-check.gradle")
+

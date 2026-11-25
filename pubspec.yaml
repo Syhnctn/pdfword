@@ -1,7 +1,7 @@
 name: pdfword_pro
 description: PDF to Word Pro mobile UI prototype built with Flutter.
 publish_to: "none"
-version: 0.1.9+20260925
+version: 0.1.10+20260926
 
 environment:
   sdk: ">=3.3.0 <4.0.0"

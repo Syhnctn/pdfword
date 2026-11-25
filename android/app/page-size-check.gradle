@@ -1,0 +1,109 @@
+// Verifies that every native library in the release APK/AAB is 16 KB page aligned.
+//
+// Google Play requires 16 KB page size support for apps targeting Android 15+, and
+// 16 KB devices (Android 16/17) otherwise refuse to load a 4 KB only library. This
+// parses each lib/<abi>/*.so ELF header and checks the PT_LOAD segment alignment.
+//
+// Kept in a separate, plain Groovy script on purpose: it avoids the Kotlin DSL
+// script compilation pitfalls and stays easy to read and maintain.
+import java.util.zip.ZipFile
+
+tasks.register("verifyPageSize16Kb") {
+    group = "verification"
+    description = "Fails if any .so in the release output is not 16 KB page aligned."
+
+    doLast {
+        def buildDir = project.layout.buildDirectory.get().asFile
+        def roots = [new File(buildDir, "outputs/flutter-apk"), new File(buildDir, "outputs/bundle")]
+        def apks = roots.findAll { it.exists() }.collectMany { root ->
+            def found = []
+            root.eachFileRecurse { if (it.isFile()) found << it }
+            found.findAll { it.name.endsWith(".apk") || it.name.endsWith(".aab") }
+        }
+
+        if (apks.isEmpty()) {
+            logger.lifecycle("[16KB] No APK/AAB found yet - skipping alignment check.")
+            return
+        }
+
+        def checked = []
+        def unaligned = []
+
+        apks.each { apk ->
+            new ZipFile(apk).withCloseable { zip ->
+                zip.entries().each { entry ->
+                    if (entry.isDirectory() || !entry.name.startsWith("lib/") || !entry.name.endsWith(".so")) {
+                        return
+                    }
+                    byte[] data = zip.getInputStream(entry).bytes
+                    if (data.length < 64 || data[0] != 0x7F || data[1] != 'E' || data[2] != 'L' || data[3] != 'F') {
+                        return
+                    }
+
+                    // ELF32/ELF64 program header walk looking for the largest PT_LOAD alignment.
+                    boolean is64 = data[4] == 2
+                    long phoff = is64 ? readLongLE(data, 0x20) : (readIntLE(data, 0x1C) & 0xFFFFFFFFL)
+                    int phentsize = readShortLE(data, is64 ? 0x36 : 0x2A)
+                    int phnum = readShortLE(data, is64 ? 0x38 : 0x2C)
+                    long maxAlign = 0L
+
+                    if (phentsize > 0 && phnum > 0) {
+                        for (int i = 0; i < phnum; i++) {
+                            long off = phoff + (long) i * phentsize
+                            if (off < 0 || off + phentsize > data.length) break
+                            if (readIntLE(data, (int) off) != 1L) continue // PT_LOAD
+                            long align = is64 ? readLongLE(data, (int) off + 48) : (readIntLE(data, (int) off + 28) & 0xFFFFFFFFL)
+                            if (align > maxAlign) maxAlign = align
+                        }
+                    }
+
+                    def line = "${entry.name} align=0x${Long.toHexString(maxAlign)}"
+                    checked << line
+                    if (maxAlign < 16384L) unaligned << line
+                }
+            }
+        }
+
+        def report = new File(buildDir, "outputs/page-size-16kb.txt")
+        report.parentFile.mkdirs()
+        def sb = new StringBuilder()
+        sb.append("16 KB page size check").append(System.lineSeparator())
+        sb.append("generated: ${java.time.LocalDateTime.now()}").append(System.lineSeparator())
+        sb.append(System.lineSeparator())
+        checked.each { sb.append("OK   ${it}").append(System.lineSeparator()) }
+        unaligned.each { sb.append("FAIL ${it}").append(System.lineSeparator()) }
+        sb.append(System.lineSeparator())
+        sb.append("checked=${checked.size()} unaligned=${unaligned.size()}").append(System.lineSeparator())
+        report.text = sb.toString()
+
+        if (!unaligned.isEmpty()) {
+            throw new GradleException(
+                    "16 KB page size check FAILED - these libraries are not 16 KB aligned:\n" +
+                            unaligned.collect { "  ${it}" }.join("\n") +
+                            "\n\nFix: use NDK r28+ (ndkVersion = flutter.ndkVersion) and keep the " +
+                            "transitive dependency that ships the .so on a 16 KB aligned release.\n" +
+                            "See ${report.absolutePath}")
+        }
+        logger.lifecycle("[16KB] OK - ${checked.size()} native libraries, all 16 KB aligned. Report: ${report.absolutePath}")
+    }
+}
+
+def readShortLE(byte[] d, int off) {
+    (d[off] & 0xFF) | ((d[off + 1] & 0xFF) << 8)
+}
+
+def readIntLE(byte[] d, int off) {
+    (d[off] & 0xFFL) | ((d[off + 1] & 0xFFL) << 8) | ((d[off + 2] & 0xFFL) << 16) | ((d[off + 3] & 0xFFL) << 24)
+}
+
+def readLongLE(byte[] d, int off) {
+    readIntLE(d, off) | (readIntLE(d, off + 4) << 32)
+}
+
+tasks.matching { it.name == "assembleRelease" }.configureEach {
+    finalizedBy("verifyPageSize16Kb")
+}
+
+tasks.matching { it.name == "bundleRelease" }.configureEach {
+    finalizedBy("verifyPageSize16Kb")
+}
